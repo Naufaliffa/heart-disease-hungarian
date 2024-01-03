@@ -5,5 +5,5 @@ Dataset yang digunakan berasal dari link : https://archive.ics.uci.edu/dataset/4
 
 dataset yang dipakai bernama "hungarian.data"
 
-Repository ini untuk di dploy menggunakan streamlit, dan hasilnya adalah ini
+Repository ini untuk di deploy menggunakan streamlit, dan hasilnya adalah ini
 https://heart-disease-hungarian-12478.streamlit.app/
