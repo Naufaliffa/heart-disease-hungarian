@@ -7,6 +7,7 @@ import streamlit as st
 import time
 import pickle
 
+
 with open("data/hungarian.data", encoding='Latin1') as file:
   lines = [line.strip() for line in file]
 
@@ -21,10 +22,12 @@ df = df.iloc[:, :-1]
 df = df.drop(df.columns[0], axis=1)
 df = df.astype(float)
 
+# -9.0 adalah nilai null
 df.replace(-9.0, np.NaN, inplace=True)
 
+#kita isi dengan 14 fitur utama yang dipakai
 df_selected = df.iloc[:, [1, 2, 7, 8, 10, 14, 17, 30, 36, 38, 39, 42, 49, 56]]
-
+#mengganti nama fitur agar lebih jelas
 column_mapping = {
   2: 'age',
   3: 'sex',
@@ -44,9 +47,11 @@ column_mapping = {
 
 df_selected.rename(columns=column_mapping, inplace=True)
 
+#drop 3 kolom, karena terlalu banyak data kosong
 columns_to_drop = ['ca', 'slope','thal']
 df_selected = df_selected.drop(columns_to_drop, axis=1)
 
+#terdapat 6 kolom yang masih memiliki nilai null, tapi karena tidak terlalu banyak kita memakai metode mean untuk mengisi nilai kosong
 meanTBPS = df_selected['trestbps'].dropna()
 meanChol = df_selected['chol'].dropna()
 meanfbs = df_selected['fbs'].dropna()
@@ -80,12 +85,14 @@ fill_values = {
 df_clean = df_selected.fillna(value=fill_values)
 df_clean.drop_duplicates(inplace=True)
 
+#memisahkan antara target dan fitur
 X = df_clean.drop("target", axis=1)
 y = df_clean['target']
 
 smote = SMOTE(random_state=42)
 X, y = smote.fit_resample(X, y)
 
+#meload model yang telah ada sebelumnya. menggunakan xgb_model.pickle
 model = pickle.load(open("model/xgb_model.pkl", 'rb'))
 
 y_pred = model.predict(X)
@@ -107,9 +114,12 @@ st.title("Hungarian Heart Disease")
 st.write(f"**_Model's Accuracy_** :  :green[**{accuracy}**]%")
 st.write("")
 
+#membuat tab
 tab1, tab2 = st.tabs(["Single-predict", "Multi-predict"])
 
+#setting untuk tab 1
 with tab1:
+  #membuat sidebar
   st.sidebar.header("User Input Sidebar")
 
   age = st.sidebar.number_input(label="**Age**", min_value=df_final['age'].min(), max_value=df_final['age'].max())
@@ -250,6 +260,7 @@ with tab1:
   st.subheader("Prediction:")
   st.subheader(result)
 
+#tab 2 untuk multi-predict
 with tab2:
   st.header("Predict multiple data:")
 
